@@ -90,6 +90,16 @@ border-radius: 8px;
 padding: 8px 12px;
 font-weight: 600;
 }
+.rate-box { margin-top: 12px; border-top: 1px dashed var(--line); padding-top: 10px;}
+.rate-box h3 { font-size: 0.95rem; margin: 0 0 6px;}
+.rate-box p { margin: 0 0 8px; font-size: 0.9rem; color: var(--ink-soft);}
+.rate-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; max-width: 460px;}
+.rate-table th,.rate-table td { border: 1px solid var(--line); padding: 5px 10px; text-align: left;}
+.rate-table th { background: var(--bg-soft); font-size: 0.82rem; color: var(--ink-soft); font-weight: 600;}
+.rate-table td.num { text-align: right; font-weight: 700; white-space: nowrap;}
+.rate-now { margin-top: 8px; font-weight: 700; font-size: 0.92rem;}
+.rate-now span.rate-badge { display: inline-block; background: var(--accent); color: var(--accent-ink); border-radius: 999px; padding: 1px 10px; font-size: 0.85rem; margin-left: 4px;}
+.price-was { color: var(--ink-soft); text-decoration: line-through; font-size: 0.85em; margin-right: 4px;}
 
 /* ---------- Toolbar ---------- */
 .toolbar {
@@ -372,6 +382,20 @@ body { background: #fff; color: #000;}
 <li>「注文内容の確認」で金額をご確認のうえ、「注文者情報」と、お渡しした「注文コード」をご記入ください。</li>
 <li>「注文を送信する」ボタンを押してください。</li>
 </ol>
+<div class="rate-box">
+<h3>数量割引（掛け率）</h3>
+<p>ご注文全体の合計枚数に応じて、税抜価格に下記の掛け率を適用します（商品ごとの枚数ではなく、注文全体の合計で判定します）。適用後の単価は1円未満切り捨てです。</p>
+<table class="rate-table">
+<thead><tr><th>注文全体の合計枚数</th><th>掛け率</th></tr></thead>
+<tbody>
+<tr><td>1〜29枚</td><td class="num">掛け率なし（定価）</td></tr>
+<tr><td>30枚以上</td><td class="num">0.8掛け</td></tr>
+<tr><td>50枚以上</td><td class="num">0.75掛け</td></tr>
+<tr><td>100枚以上</td><td class="num">0.7掛け</td></tr>
+<tr><td>1,000枚以上</td><td class="num">0.65掛け</td></tr>
+</tbody>
+</table>
+</div>
 <p class="mail-note" id="howtoMailNote">送信ボタンを押すだけで注文が送信されます。メールアプリを開く必要はありません。送信が完了すると、この画面に送信済みの「注文控え」が表示されますので、表示されるまでそのままお待ちください。</p>
 </div>
 
@@ -390,12 +414,16 @@ body { background: #fff; color: #000;}
 
 <section class="block" id="summarySection">
 <h2>注文内容の確認</h2>
-<p class="sec-note">数量を変更すると、合計は自動で計算し直されます。</p>
+<p class="sec-note">数量を変更すると、合計は自動で計算し直されます。掛け率は注文全体の合計枚数で判定します（30枚以上：0.8掛け／50枚以上：0.75掛け／100枚以上：0.7掛け／1,000枚以上：0.65掛け）。</p>
+<p class="rate-now" id="rateNow" hidden></p>
 <div id="cartArea"></div>
 <div class="totals" id="totalsArea" hidden>
 <dl>
 <div class="row"><dt>合計点数</dt><dd id="totalCount">0点</dd></div>
-<div class="row"><dt>税抜合計</dt><dd id="totalExTax">¥0</dd></div>
+<div class="row"><dt>定価合計（税抜）</dt><dd id="totalListEx">¥0</dd></div>
+<div class="row"><dt>適用掛け率</dt><dd id="totalRate">なし（定価）</dd></div>
+<div class="row"><dt>割引額（税抜）</dt><dd id="totalDiscount">¥0</dd></div>
+<div class="row"><dt>税抜合計（割引後）</dt><dd id="totalExTax">¥0</dd></div>
 <div class="row"><dt>消費税（10%）</dt><dd id="totalTax">¥0</dd></div>
 <div class="row grand"><dt>税込合計</dt><dd id="totalIncTax">¥0</dd></div>
 </dl>
@@ -480,6 +508,34 @@ body { background: #fff; color: #000;}
 var PRODUCTS = [{"category":"小さいハンカチ","group":"6重織ガーゼ小さいハンカチ　サイズ約23×25cm","code":"F1311","pattern":"ねこ（mike）","color":"ネイビー","price_ex_tax":700},{"category":"小さいハンカチ","group":"6重織ガーゼ小さいハンカチ　サイズ約23×25cm","code":"F1312","pattern":"ねこ（mike）","color":"オレンジ","price_ex_tax":700},{"category":"小さいハンカチ","group":"6重織ガーゼ小さいハンカチ　サイズ約23×25cm","code":"F1321","pattern":"ねこ（chatora）","color":"ブルー","price_ex_tax":700},{"category":"小さいハンカチ","group":"6重織ガーゼ小さいハンカチ　サイズ約23×25cm","code":"F1322","pattern":"ねこ（chatora）","color":"レッド","price_ex_tax":700},{"category":"小さいハンカチ","group":"6重織ガーゼ小さいハンカチ　サイズ約23×25cm","code":"F1341","pattern":"ちょうちょ","color":"シトロンイエロー","price_ex_tax":700},{"category":"小さいハンカチ","group":"6重織ガーゼ小さいハンカチ　サイズ約23×25cm","code":"F1342","pattern":"ちょうちょ","color":"フューシャピンク","price_ex_tax":700},{"category":"小さいハンカチ","group":"6重織ガーゼ小さいハンカチ　サイズ約23×25cm","code":"F1561","pattern":"パンダ","color":"チャコール","price_ex_tax":700},{"category":"小さいハンカチ","group":"6重織ガーゼ小さいハンカチ　サイズ約23×25cm","code":"F1571","pattern":"ペンギン","color":"チャコール","price_ex_tax":700},{"category":"小さいハンカチ","group":"6重織ガーゼ小さいハンカチ　サイズ約23×25cm","code":"F1431","pattern":"ウサギ","color":"カフェオレピンク","price_ex_tax":700},{"category":"小さいハンカチ","group":"6重織ガーゼ小さいハンカチ　サイズ約23×25cm","code":"F1441","pattern":"ライオン","color":"セルリアンブルー","price_ex_tax":700},{"category":"小さいハンカチ","group":"6重織ガーゼ小さいハンカチ　サイズ約23×25cm","code":"F1451","pattern":"クマ","color":"スモークブラウン","price_ex_tax":700},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1511","pattern":"ドット","color":"ピンク","price_ex_tax":800},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1512","pattern":"ドット","color":"ブルー","price_ex_tax":800},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1513","pattern":"ドット","color":"グリーン","price_ex_tax":800},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1921","pattern":"ヨット","color":"オールドブルー","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1551","pattern":"ハート","color":"ピンク","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1554","pattern":"ハート","color":"チャイナピンク","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1555","pattern":"ハート","color":"ラベンダー","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1581","pattern":"はりねずみ","color":"ブラウン","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1582","pattern":"はりねずみ","color":"ネイビー","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1611","pattern":"ひつじ","color":"シトロエンイエロー","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1612","pattern":"ひつじ","color":"ジェイブルー","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1621","pattern":"うさぎ","color":"フューシャピンク","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1631","pattern":"あひる","color":"ブラウン","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1632","pattern":"あひる","color":"レッド","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1651","pattern":"しろくま","color":"ダークグレー","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1652","pattern":"しろくま","color":"オリエンタルブルー","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1653","pattern":"しろくま","color":"ジェードグリーン","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1671","pattern":"りんご","color":"レッド","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1991","pattern":"プードル","color":"フューシャピンク","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1992","pattern":"プードル","color":"スモークターコイズ","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1993","pattern":"プードル","color":"ブラウンゴールド","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F11001","pattern":"カオパンダ","color":"チャコール","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F11002","pattern":"カオパンダ","color":"フューシャピンク","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F11003","pattern":"カオパンダ","color":"スモークターコイズ","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F11011","pattern":"ペンギン","color":"チャコール","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F11021","pattern":"ループ付き　　　　タオルハンカチ","color":"ピンクセット","price_ex_tax":2000},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F11022","pattern":"ループ付き　　　　タオルハンカチ","color":"イエローセット","price_ex_tax":2000},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F11023","pattern":"ループ付き　　　　　タオルハンカチ","color":"ブルーセット","price_ex_tax":2000},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F11041","pattern":"ウサギ","color":"カフェオレピンク","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F11051","pattern":"ライオン","color":"セルリアンブルー","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F11061","pattern":"クマ","color":"スモークブラウン","price_ex_tax":850},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1791","pattern":"ひつじ","color":"多色","price_ex_tax":900},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1811","pattern":"うさぎ","color":"多色","price_ex_tax":900},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1831","pattern":"あひる","color":"多色","price_ex_tax":900},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1841","pattern":"きのこ","color":"多色","price_ex_tax":900},{"category":"ハンカチ","group":"6重織ガーゼハンカチ　サイズ約27×29cm","code":"F1911","pattern":"木馬","color":"多色","price_ex_tax":900},{"category":"ハンカチ","group":"4重織ガーゼハンカチ　サイズ約27×28cm","code":"B1921","pattern":"TONTON","color":"イエロー","price_ex_tax":900},{"category":"ハンカチ","group":"4重織ガーゼハンカチ　サイズ約27×28cm","code":"B1931","pattern":"SHITOSHITO","color":"ブルー","price_ex_tax":900},{"category":"ハンカチ","group":"4重織ガーゼハンカチ　サイズ約27×28cm","code":"B1941","pattern":"ZAKUZAKU","color":"ブラウン","price_ex_tax":900},{"category":"ハンカチ","group":"4重織ガーゼハンカチ　サイズ約27×28cm","code":"B1951","pattern":"BOCHIBOCHI","color":"オレンジ","price_ex_tax":900},{"category":"ハンカチ","group":"4重織ガーゼハンカチ　サイズ約27×28cm","code":"B1961","pattern":"NOBINOBI","color":"グリーン","price_ex_tax":900},{"category":"ハンカチ","group":"4重織ガーゼハンカチ　サイズ約27×28cm","code":"B1971","pattern":"YURAYURA","color":"ブルー","price_ex_tax":900},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2011","pattern":"ほし","color":"ピーコックブルー","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2012","pattern":"ほし","color":"ラピス","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2021","pattern":"パンダ","color":"チャコール","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2031","pattern":"ハート","color":"ピンク","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2032","pattern":"ハート","color":"ローズピンク","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2051","pattern":"あひる","color":"レッド","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2052","pattern":"あひる","color":"ブラウン","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2061","pattern":"はりねずみ","color":"ネイビー","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2062","pattern":"はりねずみ","color":"ブラウン","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2071","pattern":"うさぎ","color":"フューシャピンク","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2091","pattern":"ひつじ","color":"ジェイブルー","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2092","pattern":"ひつじ","color":"シトロエンイエロー","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2122","pattern":"ドットリボン","color":"フューシャピンク","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2131","pattern":"ねこ（chatora）","color":"ブルー","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2132","pattern":"ねこ（chatora）","color":"レッド","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2271","pattern":"フラミンゴ","color":"グレイッシュピンク","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2291","pattern":"ウサギ","color":"カフェオレピンク","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2301","pattern":"ライオン","color":"セルリアンブルー","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2311","pattern":"クマ","color":"スモークブラウン","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2151","pattern":"きのこ","color":"多色","price_ex_tax":1450},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2161","pattern":"ハート","color":"多色","price_ex_tax":1450},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2171","pattern":"うさぎ","color":"多色","price_ex_tax":1450},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2181","pattern":"あひる","color":"多色","price_ex_tax":1450},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約30×75cm","code":"F2211","pattern":"くま","color":"多色","price_ex_tax":1450},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約32×80cm","code":"F2141","pattern":"gamagori　towel","color":"ブラウン","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約32×80cm","code":"F2142","pattern":"gamagori　towel","color":"ネイビー","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約32×80cm","code":"F2143","pattern":"gamagori　towel","color":"グレー","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼフェイスタオル　サイズ約32×80cm","code":"F2144","pattern":"gamagori　towel","color":"ホワイト","price_ex_tax":1400},{"category":"フェイス・バスタオル","group":"6重織ガーゼバスタオル　サイズ約45×120cm","code":"F3021","pattern":"gamagori　towel","color":"ブラウン","price_ex_tax":3300},{"category":"フェイス・バスタオル","group":"6重織ガーゼバスタオル　サイズ約45×120cm","code":"F3022","pattern":"gamagori　towel","color":"ネイビー","price_ex_tax":3300},{"category":"フェイス・バスタオル","group":"6重織ガーゼバスタオル　サイズ約45×120cm","code":"F3023","pattern":"gamagori　towel","color":"グレー","price_ex_tax":3300},{"category":"フェイス・バスタオル","group":"6重織ガーゼバスタオル　サイズ約45×120cm","code":"F3024","pattern":"gamagori　towel","color":"ホワイト","price_ex_tax":3300},{"category":"スタイ","group":"6重織ガーゼスタイ　サイズ約22×32cm","code":"F4041","pattern":"ハート","color":"ピンク","price_ex_tax":1700},{"category":"スタイ","group":"6重織ガーゼスタイ　サイズ約22×32cm","code":"F4081","pattern":"ひつじ","color":"ジェイブルー","price_ex_tax":1700},{"category":"スタイ","group":"6重織ガーゼスタイ　サイズ約22×32cm","code":"F4082","pattern":"ひつじ","color":"シトロエンイエロー","price_ex_tax":1700},{"category":"スタイ","group":"6重織ガーゼスタイ　サイズ約22×32cm","code":"F4101","pattern":"はりねずみ","color":"ネイビー","price_ex_tax":1700},{"category":"スタイ","group":"6重織ガーゼスタイ　サイズ約22×32cm","code":"F4102","pattern":"はりねずみ","color":"ブラウン","price_ex_tax":1700},{"category":"スタイ","group":"6重織ガーゼスタイ　サイズ約22×32cm","code":"F4281","pattern":"きりん","color":"シトロンイエロー","price_ex_tax":1700},{"category":"スタイ","group":"6重織ガーゼスタイ　サイズ約22×32cm","code":"F4282","pattern":"きりん","color":"セルリアンブルー","price_ex_tax":1700},{"category":"スタイ","group":"6重織ガーゼスタイ　サイズ約22×32cm","code":"F4301","pattern":"ペンギン","color":"チャコール","price_ex_tax":1700},{"category":"スタイ","group":"6重織ガーゼスタイ　サイズ約22×32cm","code":"F4181","pattern":"ハート","color":"多色","price_ex_tax":1800},{"category":"スタイ","group":"6重織ガーゼスタイ　サイズ約22×32cm","code":"F4201","pattern":"きのこ","color":"多色","price_ex_tax":1800},{"category":"スタイ","group":"6重織ガーゼスタイ　サイズ約22×32cm","code":"F4211","pattern":"くま","color":"多色","price_ex_tax":1800},{"category":"スタイ","group":"6重織ガーゼスタイ　サイズ約22×32cm","code":"F4221","pattern":"ひつじ","color":"多色","price_ex_tax":1800},{"category":"スタイ","group":"6重織ガーゼスタイ　サイズ約22×32cm","code":"F4231","pattern":"うさぎ","color":"多色","price_ex_tax":1800},{"category":"スタイ","group":"6重織ガーゼスタイ　サイズ約22×32cm","code":"F4241","pattern":"あひる","color":"多色","price_ex_tax":1800},{"category":"スタイ","group":"6重織ガーゼスタイ　サイズ約22×32cm","code":"F4271","pattern":"木馬","color":"多色","price_ex_tax":1800},{"category":"スタイ","group":"6重織ガーゼハンカチスタイ　サイズ約27×29cm","code":"F4311","pattern":"ハート","color":"ピンク","price_ex_tax":850},{"category":"スタイ","group":"6重織ガーゼハンカチスタイ　サイズ約27×29cm","code":"F4322","pattern":"はりねずみ","color":"ブラウン","price_ex_tax":850},{"category":"スタイ","group":"6重織ガーゼハンカチスタイ　サイズ約27×29cm","code":"F4333","pattern":"ひつじ","color":"シトロンイエロー","price_ex_tax":850},{"category":"スタイ","group":"6重織ガーゼハンカチスタイ　サイズ約27×29cm","code":"F4344","pattern":"ヨット","color":"オールドブルー","price_ex_tax":850},{"category":"おでかけ","group":"6重織ガーゼケット　おでかけサイズ約50×70cm","code":"F6021","pattern":"ほし","color":"ピーコックブルー","price_ex_tax":2000},{"category":"おでかけ","group":"6重織ガーゼケット　おでかけサイズ約50×70cm","code":"F6022","pattern":"ほし","color":"ラピス","price_ex_tax":2000},{"category":"おでかけ","group":"6重織ガーゼケット　おでかけサイズ約50×70cm","code":"F6031","pattern":"はりねずみ","color":"ブラウン","price_ex_tax":2000},{"category":"おでかけ","group":"6重織ガーゼケット　おでかけサイズ約50×70cm","code":"F6032","pattern":"はりねずみ","color":"ネイビー","price_ex_tax":2000},{"category":"おでかけ","group":"6重織ガーゼケット　おでかけサイズ約50×70cm","code":"F6061","pattern":"パンダ","color":"チャコール","price_ex_tax":2000},{"category":"おでかけ","group":"6重織ガーゼケット　おでかけサイズ約50×70cm","code":"F6071","pattern":"ハート","color":"ピンク","price_ex_tax":2000},{"category":"おでかけ","group":"6重織ガーゼケット　おでかけサイズ約50×70cm","code":"F6091","pattern":"りんご","color":"レッド","price_ex_tax":2000},{"category":"おでかけ","group":"6重織ガーゼケット　おでかけサイズ約50×70cm","code":"F6121","pattern":"ひつじ","color":"ジェイブルー","price_ex_tax":2000},{"category":"おでかけ","group":"6重織ガーゼケット　おでかけサイズ約50×70cm","code":"F6122","pattern":"ひつじ","color":"シトロンイエロー","price_ex_tax":2000},{"category":"おでかけ","group":"6重織ガーゼケット　おでかけサイズ約50×70cm","code":"F6131","pattern":"うさぎ","color":"フューシャピンク","price_ex_tax":2000},{"category":"おでかけ","group":"6重織ガーゼケット　おでかけサイズ約50×70cm","code":"F6381","pattern":"ペンギン","color":"チャコール","price_ex_tax":2000},{"category":"おでかけ","group":"6重織ガーゼケット　おでかけサイズ約50×70cm","code":"F6161","pattern":"花","color":"ジェイブルー","price_ex_tax":2000},{"category":"おでかけ","group":"6重織ガーゼケット　おでかけサイズ約50×70cm","code":"F6171","pattern":"北欧","color":"シトロンイエロー","price_ex_tax":2000},{"category":"おでかけ","group":"6重織ガーゼケット　おでかけサイズ約50×70cm","code":"F6181","pattern":"ハート","color":"多色","price_ex_tax":2200},{"category":"おでかけ","group":"6重織ガーゼケット　おでかけサイズ約50×70cm","code":"F6191","pattern":"きのこ","color":"多色","price_ex_tax":2200},{"category":"おでかけ","group":"6重織ガーゼケット　おでかけサイズ約50×70cm","code":"F6221","pattern":"くま","color":"多色","price_ex_tax":2200},{"category":"おでかけ","group":"6重織ガーゼケット　おでかけサイズ約50×70cm","code":"F6241","pattern":"ひつじ","color":"多色","price_ex_tax":2200},{"category":"おでかけ","group":"6重織ガーゼケット　おでかけサイズ約50×70cm","code":"F6261","pattern":"あひる","color":"多色","price_ex_tax":2200},{"category":"おでかけ","group":"6重織ガーゼケット　おでかけサイズ約50×70cm","code":"F6291","pattern":"木馬","color":"多色","price_ex_tax":2200},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7021","pattern":"ほし","color":"ピーコックブルー","price_ex_tax":4000},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7022","pattern":"ほし","color":"ラピス","price_ex_tax":4000},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7031","pattern":"はりねずみ","color":"ブラウン","price_ex_tax":4000},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7032","pattern":"はりねずみ","color":"ネイビー","price_ex_tax":4000},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7061","pattern":"パンダ","color":"チャコール","price_ex_tax":4000},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7071","pattern":"ハート","color":"ピンク","price_ex_tax":4000},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7091","pattern":"りんご","color":"レッド","price_ex_tax":4000},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7141","pattern":"ひつじ","color":"ジェイブルー","price_ex_tax":4000},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7142","pattern":"ひつじ","color":"シトロンイエロー","price_ex_tax":4000},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7151","pattern":"うさぎ","color":"フューシャピンク","price_ex_tax":4000},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7481","pattern":"ペンギン","color":"チャコール","price_ex_tax":4000},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7181","pattern":"花","color":"ジェイブルー","price_ex_tax":4000},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7191","pattern":"北欧","color":"シトロンイエロー","price_ex_tax":4000},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7621","pattern":"ウサギ","color":"カフェオレピンク","price_ex_tax":4000},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7631","pattern":"ライオン","color":"セルリアンブルー","price_ex_tax":4000},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7641","pattern":"クマ","color":"スモークブラウン","price_ex_tax":4000},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7201","pattern":"ハート","color":"多色","price_ex_tax":4200},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7211","pattern":"きのこ","color":"多色","price_ex_tax":4200},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7241","pattern":"くま","color":"多色","price_ex_tax":4200},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7261","pattern":"ひつじ","color":"多色","price_ex_tax":4200},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7281","pattern":"あひる","color":"多色","price_ex_tax":4200},{"category":"おひるね","group":"6重織ガーゼケット　おひるねサイズ約70×100cm","code":"F7311","pattern":"木馬","color":"多色","price_ex_tax":4200},{"category":"おひるね","group":"4重織ガーゼケット　ベビーサイズ約70×100cm","code":"B7411","pattern":"TONTON","color":"イエロー","price_ex_tax":5000},{"category":"おひるね","group":"4重織ガーゼケット　ベビーサイズ約70×100cm","code":"B7421","pattern":"SHITOSHITO","color":"ブルー","price_ex_tax":5000},{"category":"おひるね","group":"4重織ガーゼケット　ベビーサイズ約70×100cm","code":"B7431","pattern":"ZAKUZAKU","color":"ブラウン","price_ex_tax":5000},{"category":"おひるね","group":"4重織ガーゼケット　ベビーサイズ約70×100cm","code":"B7441","pattern":"BOCHIBOCHI","color":"オレンジ","price_ex_tax":5000},{"category":"おひるね","group":"4重織ガーゼケット　ベビーサイズ約70×100cm","code":"B7451","pattern":"NOBINOBI","color":"グリーン","price_ex_tax":5000},{"category":"おひるね","group":"4重織ガーゼケット　ベビーサイズ約70×100cm","code":"B7461","pattern":"YURAYURA","color":"ブルー","price_ex_tax":5000},{"category":"ハーフ","group":"6重織ガーゼケット　ハーフサイズ約100×140cm","code":"F8011","pattern":"花","color":"ジェイブルー","price_ex_tax":5000},{"category":"ハーフ","group":"6重織ガーゼケット　ハーフサイズ約100×140cm","code":"F8021","pattern":"北欧","color":"シトロンイエロー","price_ex_tax":5000},{"category":"ハーフ","group":"6重織ガーゼケット　ハーフサイズ約100×140cm","code":"F8171","pattern":"格子","color":"ピンク","price_ex_tax":5000},{"category":"ハーフ","group":"6重織ガーゼケット　ハーフサイズ約100×140cm","code":"F8172","pattern":"格子","color":"ベージュ","price_ex_tax":5000},{"category":"ハーフ","group":"6重織ガーゼケット　ハーフサイズ約100×140cm","code":"F8173","pattern":"格子","color":"ライトグレー","price_ex_tax":5000},{"category":"ハーフ","group":"6重織ガーゼケット　ハーフサイズ約100×140cm","code":"F8181","pattern":"雲　ポルカドット","color":"アイボリー","price_ex_tax":5000},{"category":"ハーフ","group":"6重織ガーゼケット　ハーフサイズ約100×140cm","code":"F8182","pattern":"雲　ポルカドット","color":"チャコール","price_ex_tax":5000},{"category":"ハーフ","group":"4重織ガーゼケット　ハーフサイズ約100×140cm","code":"B8111","pattern":"TONTON","color":"イエロー","price_ex_tax":7500},{"category":"ハーフ","group":"4重織ガーゼケット　ハーフサイズ約100×140cm","code":"B8121","pattern":"SHITOSHITO","color":"ブルー","price_ex_tax":7500},{"category":"ハーフ","group":"4重織ガーゼケット　ハーフサイズ約100×140cm","code":"B8131","pattern":"ZAKUZAKU","color":"ブラウン","price_ex_tax":7500},{"category":"ハーフ","group":"4重織ガーゼケット　ハーフサイズ約100×140cm","code":"B8141","pattern":"BOCHIBOCHI","color":"オレンジ","price_ex_tax":7500},{"category":"ハーフ","group":"4重織ガーゼケット　ハーフサイズ約100×140cm","code":"B8151","pattern":"NOBINOBI","color":"グリーン","price_ex_tax":7500},{"category":"ハーフ","group":"4重織ガーゼケット　ハーフサイズ約100×140cm","code":"B8161","pattern":"YURAYURA","color":"ブルー","price_ex_tax":7500},{"category":"シングル","group":"6重織ガーゼケット　シングルサイズ約140×190cm","code":"F9011","pattern":"花","color":"ジェイブルー","price_ex_tax":9000},{"category":"シングル","group":"6重織ガーゼケット　シングルサイズ約140×190cm","code":"F9021","pattern":"北欧","color":"シトロンイエロー","price_ex_tax":9000},{"category":"シングル","group":"6重織ガーゼケット　シングルサイズ約140×190cm","code":"F9161","pattern":"格子","color":"ピンク","price_ex_tax":8000},{"category":"シングル","group":"6重織ガーゼケット　シングルサイズ約140×190cm","code":"F9162","pattern":"格子","color":"ベージュ","price_ex_tax":8000},{"category":"シングル","group":"6重織ガーゼケット　シングルサイズ約140×190cm","code":"F9163","pattern":"格子","color":"ライトグレー","price_ex_tax":8000},{"category":"シングル","group":"6重織ガーゼケット　シングルサイズ約140×190cm","code":"F9171","pattern":"雲　ポルカドット","color":"アイボリー","price_ex_tax":8000},{"category":"シングル","group":"6重織ガーゼケット　シングルサイズ約140×190cm","code":"F9172","pattern":"雲　ポルカドット","color":"チャコール","price_ex_tax":8000},{"category":"シングル","group":"4重織ガーゼケット　シングルサイズ約140×190cm","code":"B9101","pattern":"TONTON","color":"イエロー","price_ex_tax":12000},{"category":"シングル","group":"4重織ガーゼケット　シングルサイズ約140×190cm","code":"B9111","pattern":"SHITOSHITO","color":"ブルー","price_ex_tax":12000},{"category":"シングル","group":"4重織ガーゼケット　シングルサイズ約140×190cm","code":"B9121","pattern":"ZAKUZAKU","color":"ブラウン","price_ex_tax":12000},{"category":"シングル","group":"4重織ガーゼケット　シングルサイズ約140×190cm","code":"B9131","pattern":"BOCHIBOCHI","color":"オレンジ","price_ex_tax":12000},{"category":"シングル","group":"4重織ガーゼケット　シングルサイズ約140×190cm","code":"B9141","pattern":"NOBINOBI","color":"グリーン","price_ex_tax":12000},{"category":"シングル","group":"4重織ガーゼケット　シングルサイズ約140×190cm","code":"B9151","pattern":"YURAYURA","color":"ブルー","price_ex_tax":12000},{"category":"敷きパット","group":"4重織ガーゼ敷きパット　サイズ約100×200cm","code":"B0611","pattern":"TONTON","color":"イエロー","price_ex_tax":12000},{"category":"敷きパット","group":"4重織ガーゼ敷きパット　サイズ約100×200cm","code":"B0621","pattern":"SHITOSHITO","color":"ブルー","price_ex_tax":12000},{"category":"敷きパット","group":"4重織ガーゼ敷きパット　サイズ約100×200cm","code":"B0631","pattern":"ZAKUZAKU","color":"ブラウン","price_ex_tax":12000},{"category":"敷きパット","group":"4重織ガーゼ敷きパット　サイズ約100×200cm","code":"B0641","pattern":"BOCHIBOCHI","color":"オレンジ","price_ex_tax":12000},{"category":"敷きパット","group":"4重織ガーゼ敷きパット　サイズ約100×200cm","code":"B0651","pattern":"NOBINOBI","color":"グリーン","price_ex_tax":12000},{"category":"敷きパット","group":"4重織ガーゼ敷きパット　サイズ約100×200cm","code":"B0661","pattern":"YURAYURA","color":"ブルー","price_ex_tax":12000}];
 var MAIL_TO = "shinichi@nakase.jp";
 var TAX_RATE = 0.10;
+/* ===== 数量割引（掛け率） =====
+   注文全体の合計枚数で判定します（商品ごとではありません）。
+   30枚以上：0.8掛け／50枚以上：0.75掛け／100枚以上：0.7掛け／1,000枚以上：0.65掛け。
+   税抜単価に掛け率を掛け、1円未満は切り捨てます。 */
+var RATE_TIERS = [
+{ min: 1000, rate: 0.65 },
+{ min: 100, rate: 0.7 },
+{ min: 50, rate: 0.75 },
+{ min: 30, rate: 0.8 },
+{ min: 0, rate: 1 }
+];
+function rateForCount(count) {
+for (var i = 0; i < RATE_TIERS.length; i++) {
+if (count >= RATE_TIERS[i].min) return RATE_TIERS[i].rate;
+}
+return 1;
+}
+function rateLabel(rate) {
+return rate >= 1 ? "なし（定価）" : String(rate) + "掛け";
+}
+function discountedUnit(priceExTax, rate) {
+return Math.floor(priceExTax * rate);
+}
+function totalQtyCount() {
+var c = 0;
+PRODUCTS.forEach(function (p) { c += qty[p.code] || 0; });
+return c;
+}
 /* ===== Web3Forms 設定 =====
    受信先を変更するときは、web3forms.com で新しい受信先アドレス用の
    アクセスキーを発行し、下の文字列を差し替えるだけで切り替わります。
@@ -586,6 +642,23 @@ return '<div class="' + cls + '">' +
 "</div>";
 }
 
+function lineSubtotalHTML(p) {
+var q = qty[p.code];
+if (q <= 0) return "";
+var rate = rateForCount(totalQtyCount());
+var unit = discountedUnit(p.price_ex_tax, rate);
+if (rate < 1) {
+return "小計（税抜） <b>" + yen(unit * q) + "</b>（" + rateLabel(rate) + "適用後単価 " + yen(unit) + "）";
+}
+return "小計（税抜） <b>" + yen(p.price_ex_tax * q) + "</b>";
+}
+function refreshAllSubtotals() {
+document.querySelectorAll("[data-subtotal]").forEach(function (el) {
+var p = byCode[el.getAttribute("data-subtotal")];
+if (p) el.innerHTML = lineSubtotalHTML(p);
+});
+}
+
 function renderProducts() {
 var list = PRODUCTS.filter(matches);
 resultCount.textContent = list.length + " 商品を表示しています（全" + PRODUCTS.length + "商品）";
@@ -614,7 +687,7 @@ html += '<article class="card' + (q > 0? " selected": "") + '" data-card="' + p.
 '<div class="card-color">' + esc(p.color) + "</div>" +
 '<div class="card-price"><span class="yen">' + yen(p.price_ex_tax) + '</span> <span class="tax-note">（税抜）</span></div>' +
 '<div class="qty-row"><label>数量</label>' + stepperHTML(p.code, "stepper") + "</div>" +
-'<div class="line-subtotal" data-subtotal="' + p.code + '">' + (q > 0? "小計（税抜） <b>" + yen(p.price_ex_tax * q) + "</b>": "") + "</div>" +
+'<div class="line-subtotal" data-subtotal="' + p.code + '">' + lineSubtotalHTML(p) + "</div>" +
 "</div></article>";
 });
 if (gridOpen) html += "</div>";
@@ -640,8 +713,7 @@ qty[code] = clampQty(v);
 document.querySelectorAll('input[data-qty="' + code + '"]').forEach(function (inp) { inp.value = qty[code];});
 var card = document.querySelector('[data-card="' + code + '"]');
 if (card) card.classList.toggle("selected", qty[code] > 0);
-var sub = document.querySelector('[data-subtotal="' + code + '"]');
-if (sub) sub.innerHTML = qty[code] > 0? "小計（税抜） <b>" + yen(byCode[code].price_ex_tax * qty[code]) + "</b>": "";
+refreshAllSubtotals();
 renderSummary();
 }
 
@@ -651,16 +723,32 @@ return PRODUCTS.filter(function (p) { return qty[p.code] > 0;});
 }
 function totals() {
 var items = selectedItems();
-var count = 0, ex = 0;
-items.forEach(function (p) { count += qty[p.code]; ex += p.price_ex_tax * qty[p.code];});
+var count = 0, listEx = 0;
+items.forEach(function (p) { count += qty[p.code]; listEx += p.price_ex_tax * qty[p.code];});
+var rate = rateForCount(count);
+var ex = 0;
+items.forEach(function (p) { ex += discountedUnit(p.price_ex_tax, rate) * qty[p.code];});
 var tax = Math.floor(ex * TAX_RATE);
-return { items: items, count: count, exTax: ex, tax: tax, incTax: ex + tax};
+return { items: items, count: count, rate: rate, listExTax: listEx, discount: listEx - ex, exTax: ex, tax: tax, incTax: ex + tax};
 }
+function unitFor(p, t) { return discountedUnit(p.price_ex_tax, t.rate); }
 
 var cartArea = document.getElementById("cartArea");
 var totalsArea = document.getElementById("totalsArea");
+var rateNowEl = document.getElementById("rateNow");
 function renderSummary() {
 var t = totals();
+if (rateNowEl) {
+if (t.count > 0) {
+rateNowEl.hidden = false;
+if (t.rate < 1) {
+rateNowEl.innerHTML = "現在の適用掛け率<span class=\"rate-badge\">" + esc(rateLabel(t.rate)) + "</span>（合計 " + t.count.toLocaleString("ja-JP") + "枚で判定）";
+} else {
+var next = RATE_TIERS.filter(function (tier) { return tier.rate < 1 && t.count < tier.min; }).sort(function (a, b) { return a.min - b.min; })[0];
+rateNowEl.textContent = next ? "あと " + (next.min - t.count) + "枚で " + rateLabel(next.rate) + " が適用されます（現在は定価）。" : "現在は定価です。";
+}
+} else { rateNowEl.hidden = true; }
+}
 if (t.items.length === 0) {
 cartArea.innerHTML = '<div class="cart-empty">まだ商品が選ばれていません。上の商品一覧から数量を入力してください。</div>';
 totalsArea.hidden = true;
@@ -669,18 +757,23 @@ var html = '<table class="sum-table"><thead><tr>' +
 '<th class="thumb" aria-hidden="true"></th><th>商品</th><th>単価（税抜）</th><th>数量</th><th class="num">小計（税抜）</th>' +
 "</tr></thead><tbody>";
 t.items.forEach(function (p) {
+var unit = unitFor(p, t);
+var unitCell = t.rate < 1 ? '<span class="price-was">' + yen(p.price_ex_tax) + "</span>" + yen(unit) : yen(p.price_ex_tax);
 html += "<tr>" +
 '<td class="thumb"><img src="' + IMG[p.code] + '" alt="" loading="lazy" /></td>' +
 "<td><div class=\"p-code\">" + esc(p.code) + '</div><span class="p-name">' + esc(p.pattern) + '</span> <span class="p-color">' + esc(p.color) + "</span></td>" +
-'<td class="num">' + yen(p.price_ex_tax) + "</td>" +
+'<td class="num">' + unitCell + "</td>" +
 "<td>" + stepperHTML(p.code, "mini-stepper") + "</td>" +
-'<td class="num"><b>' + yen(p.price_ex_tax * qty[p.code]) + "</b></td>" +
+'<td class="num"><b>' + yen(unit * qty[p.code]) + "</b></td>" +
 "</tr>";
 });
 html += "</tbody></table>";
 cartArea.innerHTML = html;
 totalsArea.hidden = false;
 document.getElementById("totalCount").textContent = t.count.toLocaleString("ja-JP") + "点";
+document.getElementById("totalListEx").textContent = yen(t.listExTax);
+document.getElementById("totalRate").textContent = rateLabel(t.rate);
+document.getElementById("totalDiscount").textContent = t.discount > 0 ? "−" + yen(t.discount) : yen(0);
 document.getElementById("totalExTax").textContent = yen(t.exTax);
 document.getElementById("totalTax").textContent = yen(t.tax);
 document.getElementById("totalIncTax").textContent = yen(t.incTax);
@@ -744,13 +837,17 @@ lines.push("");
 lines.push("■ 注文内容");
 lines.push("注文日時：" + when);
 lines.push("────────────────────");
-lines.push("品番 / 柄 / 色 / 単価（税抜） / 数量 / 小計（税抜）");
+lines.push("品番 / 柄 / 色 / 定価単価（税抜） / 適用後単価（税抜） / 数量 / 小計（税抜）");
 t.items.forEach(function (p) {
-lines.push(p.code + " / " + p.pattern + " / " + p.color + " / " + yen(p.price_ex_tax) + " / " + qty[p.code] + " / " + yen(p.price_ex_tax * qty[p.code]));
+var unit = unitFor(p, t);
+lines.push(p.code + " / " + p.pattern + " / " + p.color + " / " + yen(p.price_ex_tax) + " / " + yen(unit) + " / " + qty[p.code] + " / " + yen(unit * qty[p.code]));
 });
 lines.push("────────────────────");
 lines.push("合計点数：" + t.count + "点");
-lines.push("税抜合計：" + yen(t.exTax));
+lines.push("適用掛け率：" + rateLabel(t.rate) + "（注文全体の合計枚数で判定）");
+lines.push("定価合計（税抜）：" + yen(t.listExTax));
+lines.push("割引額（税抜）：" + yen(t.discount));
+lines.push("税抜合計（割引後）：" + yen(t.exTax));
 lines.push("消費税（10%）：" + yen(t.tax));
 lines.push("税込合計：" + yen(t.incTax));
 return lines.join("\n");
@@ -781,8 +878,10 @@ function renderReceipt(f, t, when, bodyText, mailtoLong, mailto, mode) {
 var sent = mode === "web3forms";
 var rows = "";
 t.items.forEach(function (p) {
+var unit = unitFor(p, t);
+var unitCell = t.rate < 1 ? '<span class="price-was">' + yen(p.price_ex_tax) + "</span>" + yen(unit) : yen(p.price_ex_tax);
 rows += "<tr><td>" + esc(p.code) + "</td><td>" + esc(p.pattern) + "</td><td>" + esc(p.color) + "</td>" +
-'<td class="num">' + yen(p.price_ex_tax) + '</td><td class="num">' + qty[p.code] + '</td><td class="num">' + yen(p.price_ex_tax * qty[p.code]) + "</td></tr>";
+'<td class="num">' + unitCell + '</td><td class="num">' + qty[p.code] + '</td><td class="num">' + yen(unit * qty[p.code]) + "</td></tr>";
 });
 receiptWrap.innerHTML =
 '<div class="receipt">' +
@@ -803,7 +902,10 @@ receiptWrap.innerHTML =
 "<tbody>" + rows + "</tbody></table>" +
 '<div class="totals"><dl>' +
 '<div class="row"><dt>合計点数</dt><dd>' + t.count + "点</dd></div>" +
-'<div class="row"><dt>税抜合計</dt><dd>' + yen(t.exTax) + "</dd></div>" +
+'<div class="row"><dt>定価合計（税抜）</dt><dd>' + yen(t.listExTax) + "</dd></div>" +
+'<div class="row"><dt>適用掛け率</dt><dd>' + esc(rateLabel(t.rate)) + "</dd></div>" +
+'<div class="row"><dt>割引額（税抜）</dt><dd>' + (t.discount > 0 ? "−" + yen(t.discount) : yen(0)) + "</dd></div>" +
+'<div class="row"><dt>税抜合計（割引後）</dt><dd>' + yen(t.exTax) + "</dd></div>" +
 '<div class="row"><dt>消費税（10%）</dt><dd>' + yen(t.tax) + "</dd></div>" +
 '<div class="row grand"><dt>税込合計</dt><dd>' + yen(t.incTax) + "</dd></div>" +
 "</dl></div>" +
@@ -920,6 +1022,12 @@ email: f.email,
 "電話番号": f.phone || "（未記入）",
 "希望納期": f.delivery || "（未記入）",
 "備考": f.note || "（なし）",
+"合計点数": t.count + "点",
+"適用掛け率": rateLabel(t.rate),
+"定価合計（税抜）": yen(t.listExTax),
+"割引額（税抜）": yen(t.discount),
+"税抜合計（割引後）": yen(t.exTax),
+"税込合計": yen(t.incTax),
 message: body,
 botcheck: false
 };
